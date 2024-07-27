@@ -1,5 +1,5 @@
 resource "aws_appautoscaling_target" "ecs" {
-  count              = var.autoscaling_cpu || var.autoscaling_memory || length(var.autoscaling_custom) > 0 ? 1 : 0
+  count              = var.autoscaling_cpu || var.autoscaling_memory || var.autoscaling_alb || length(var.autoscaling_custom) > 0 ? 1 : 0
   max_capacity       = var.autoscaling_max
   min_capacity       = var.autoscaling_min
   resource_id        = "service/${var.cluster_name}/${aws_ecs_service.default.name}"
@@ -63,7 +63,7 @@ resource "aws_appautoscaling_policy" "scale_alb" {
 
     predefined_metric_specification {
       predefined_metric_type = "ALBRequestCountPerTarget"
-      resource_label         = "app/${aws_lb.green.name}/${aws_lb.green.id}/targetgroup/${aws_lb_target_group.green.name}/${aws_lb_target_group.green.id}"
+      resource_label         = "app/${split("/app/",data.aws_lb_listener.ecs.load_balancer_arn)[1]}/${aws_lb_target_group.green.arn_suffix}"
     }
   }
 }
