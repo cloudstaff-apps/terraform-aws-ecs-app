@@ -63,7 +63,7 @@ resource "aws_appautoscaling_policy" "scale_alb" {
 
     predefined_metric_specification {
       predefined_metric_type = "ALBRequestCountPerTarget"
-      resource_label         = "app/${split("/app/",data.aws_lb_listener.ecs.load_balancer_arn)[1]}/${aws_lb_target_group.green.arn_suffix}"
+      resource_label         = "${split("loadbalancer/", data.aws_lb_listener.ecs.load_balancer_arn)[1]}/${aws_lb_target_group.green.arn_suffix}"
     }
   }
 }
