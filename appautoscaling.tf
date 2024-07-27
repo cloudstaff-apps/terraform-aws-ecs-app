@@ -47,6 +47,27 @@ resource "aws_appautoscaling_policy" "scale_memory" {
   }
 }
 
+resource "aws_appautoscaling_policy" "scale_alb" {
+  count              = var.autoscaling_alb ? 1 : 0
+  name               = "scale-alb-request-count"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs[0].resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs[0].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs[0].service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value       = var.autoscaling_target_alb
+    disable_scale_in   = false
+    scale_in_cooldown  = var.autoscaling_scale_in_cooldown
+    scale_out_cooldown = var.autoscaling_scale_out_cooldown
+
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label         = "app/${aws_lb.green.name}/${aws_lb.green.id}/targetgroup/${aws_lb_target_group.green.name}/${aws_lb_target_group.green.id}"
+    }
+  }
+}
+
 resource "aws_appautoscaling_policy" "scale_custom" {
   for_each = { for custom in var.autoscaling_custom : custom.name => custom }
 
