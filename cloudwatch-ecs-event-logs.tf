@@ -37,7 +37,7 @@ resource "aws_cloudwatch_event_target" "ecs_events" {
 }
 
 data "aws_iam_policy_document" "ecs_events" {
-  count = var.cloudwatch_logs_create ? 1 : 0
+  count = var.cloudwatch_logs_create && var.cloudwatch_logs_create_resource_policy ? 1 : 0
   statement {
     actions = [
       "logs:CreateLogStream",
@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "ecs_events" {
 }
 
 resource "aws_cloudwatch_log_resource_policy" "ecs_events" {
-  count           = var.cloudwatch_logs_create ? 1 : 0
+  count           = var.cloudwatch_logs_create && var.cloudwatch_logs_create_resource_policy ? 1 : 0
   policy_document = data.aws_iam_policy_document.ecs_events[0].json
   policy_name     = "capture-ecs-events-${var.cluster_name}-${var.name}"
 

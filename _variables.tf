@@ -240,6 +240,11 @@ variable "cloudwatch_logs_create" {
   description = "Whether to create cloudwatch log resources or not"
 }
 
+variable "cloudwatch_logs_create_resource_policy" {
+  default     = true
+  description = "Whether to create cloudwatch log resources policy or not"
+}
+
 variable "cloudwatch_logs_retention" {
   default     = 120
   description = "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653."
@@ -414,6 +419,12 @@ variable "auth_oidc_session_timeout" {
   type        = number
   default     = 43200
   description = "Session timeout for OIDC authentication (default 12 hours)"
+}
+
+variable "auth_oidc_scope" {
+  type        = string
+  default     = "openid"
+  description = "Scope for OIDC authentication (Google: profile email openid)"
 }
 
 variable "ulimits" {
