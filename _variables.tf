@@ -89,15 +89,12 @@ variable "cluster_name" {
 
 variable "service_role_arn" {
   description = "Existing service role ARN created by ECS cluster module"
-}
-
-variable "codedeploy_role_arn" {
   default     = null
-  description = "Existing IAM CodeDeploy role ARN created by ECS cluster module"
 }
 
 variable "task_role_arn" {
   description = "Existing task role ARN created by ECS cluster module"
+  default     = null
 }
 
 variable "service_health_check_grace_period_seconds" {
@@ -136,10 +133,6 @@ variable "vpc_id" {
 
 variable "alb_listener_https_arn" {
   description = "ALB HTTPS Listener created by ECS cluster module"
-}
-
-variable "test_traffic_route_listener_arn" {
-  description = "ALB HTTPS Listener for Test Traffic created by ECS cluster module"
 }
 
 variable "alb_dns_name" {
@@ -242,21 +235,6 @@ variable "alb_only" {
   description = "Whether to deploy only an alb and no cloudFront or not with the cluster"
 }
 
-variable "codedeploy_wait_time_for_cutover" {
-  default     = 0
-  description = "Time in minutes to route the traffic to the new application deployment"
-}
-
-variable "codedeploy_wait_time_for_termination" {
-  default     = 0
-  description = "Time in minutes to terminate the new deployment"
-}
-
-variable "codedeploy_deployment_config_name" {
-  default     = "CodeDeployDefault.ECSAllAtOnce"
-  description = "Specifies the deployment configuration for CodeDeploy"
-}
-
 variable "cloudwatch_logs_create" {
   default     = true
   description = "Whether to create cloudwatch log resources or not"
@@ -275,6 +253,13 @@ variable "cloudwatch_logs_export" {
 variable "compat_keep_target_group_naming" {
   default     = false
   description = "Keeps old naming convention for target groups to avoid recreation of resource in production environments"
+}
+
+
+variable "tags" {
+  description = "Map of tags that will be added to created resources. By default resources will be tagged with terraform=true."
+  type        = map(string)
+  default     = {}
 }
 
 variable "launch_type" {
@@ -345,12 +330,6 @@ variable "placement_constraints" {
     expression = string
   }))
   default = []
-}
-
-variable "create_iam_codedeployrole" {
-  type        = bool
-  default     = true
-  description = "Create Codedeploy IAM Role for ECS or not."
 }
 
 variable "alarm_prefix" {
@@ -472,11 +451,6 @@ variable "redirects" {
   default     = {}
 }
 
-variable "deployment_controller" {
-  default     = "CODE_DEPLOY"
-  description = "Type of deployment controller. Valid values: CODE_DEPLOY, ECS, EXTERNAL."
-}
-
 variable "ecs_service_capacity_provider_strategy" {
   description = "(Optional) The capacity provider strategy to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if set to [] and not changing from 0 capacity_provider_strategy blocks to greater than 0, or vice versa."
   default     = [{}]
@@ -504,3 +478,20 @@ variable "schedule_cron_stop" {
   default     = ""
   description = "Cron expression to define when to trigger a stop of the auto-scaling group. E.g. 'cron(00 09 ? * MON-FRI *)' to start at 8am UTC time"
 }
+
+variable "command" {
+  type        = list(string)
+  default     = null
+  description = "Command to run on container"
+}
+
+variable "task_role_policies_managed" {
+  default     = []
+  description = "AWS Managed policies to be added on the task role."
+}
+
+variable "task_role_policies" {
+  default     = []
+  description = "Custom policies to be added on the task role."
+}
+
